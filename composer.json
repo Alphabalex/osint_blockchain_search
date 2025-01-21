@@ -1,0 +1,22 @@
+{
+    "name": "eaglewatch/web3_search",
+    "require": {
+        "php": ">=7.4",
+        "guzzlehttp/guzzle": "^7.0.1"
+    },
+    "autoload": {
+        "files": [
+            "helpers/helper.php"
+        ],
+        "psr-4": {
+            "Eaglewatch\\Web3Search\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Balogun Abdulquddus",
+            "email": "babusunnah@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
