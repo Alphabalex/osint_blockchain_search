@@ -4,34 +4,33 @@ namespace Eaglewatch\Web3Search\Abstracts;
 
 use Exception;
 use GuzzleHttp\Client;
+use InvalidArgumentException;
 use Illuminate\Http\Client\Response;
 use GuzzleHttp\Promise\PromiseInterface;
 
 
 abstract class HttpRequest
 {
-    protected string $baseUrl, $apiKey;
-    protected $client;
-    protected $response;
-    protected array $additionalHeader = [];
+    private string $api_url;
+    private $client;
+    private $response;
+    private array $additionalHeader = [];
 
-    public function __construct()
+    protected function setHeaders(array $headers): void
     {
-        //$this->setApiUrl();
+        $this->additionalHeader =  $headers;
     }
 
-    protected function setApiUrl($apiBaseUrl): void
+    protected function setApiUrl(string $url): void
     {
-        $this->baseUrl = $apiBaseUrl;
+        $this->api_url =  $url;
     }
 
-    protected function setApiKey($key): void
+    protected function sendHttpRequest($relativeUrl, $method, $body = [], $response = 'json')
     {
-        $this->apiKey = $key;
-    }
-
-    protected function setRequestOptions()
-    {
+        if (empty($this->api_url)) {
+            throw new InvalidArgumentException("Api URL is required and cannot be empty");
+        }
         $headers = [
             'Content-Type'  => 'application/json',
             'Accept'        => 'application/json',
@@ -39,32 +38,27 @@ abstract class HttpRequest
         ];
         $this->client = new Client(
             [
-                'base_uri' => $this->baseUrl,
+                'base_uri' => $this->api_url,
                 'headers' => $headers
             ]
         );
-    }
-
-    protected function setHttpResponse($relativeUrl, $method, $body = [])
-    {
         if (is_null($method)) {
             throw new Exception("Request method must be specified");
         }
 
         $this->response = $this->client->{strtolower($method)}(
-            $this->baseUrl . $relativeUrl,
+            $this->api_url . $relativeUrl,
             ["body" => json_encode($body)]
         );
-        return $this;
-    }
 
-    protected function getResponse()
-    {
-        $data = json_decode($this->response->getBody(), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Failed to decode JSON: " . json_last_error_msg());
+        if ($response == 'json') {
+            $data = json_decode($this->response->getBody(), true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception("Failed to decode JSON: " . json_last_error_msg());
+            }
+            return $data;
         }
-        return $data;
+        return $this->response->getBody()->getContents();
     }
 
     protected function getFileContent($url)

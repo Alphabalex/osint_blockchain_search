@@ -8,11 +8,15 @@ use Eaglewatch\Web3Search\Abstracts\HttpRequest;
 class Xpl extends HttpRequest
 {
 
-    public function __construct()
+    private $defaultConfig = array("api_url" => "https://sandbox-api.3xpl.com");
+    private $options = array();
+    private $apiKey;
+
+    public function __construct(string $api_key, array $options = [])
     {
-        $this->setApiUrl(config('xpl.sandbox_url'));
-        $this->setApiKey(config('xpl.api_key'));
-        //$this->additionalHeader = ['X-API-Key' => $this->apiKey];
+        $this->options = array_merge($this->defaultConfig, $options);
+        $this->setApiUrl($this->options['api_url']);
+        $this->apiKey = $api_key;
     }
 
     public function getLastSeenData(string $blockchain, array $addresses, array $data, string $from = 'all', string $mixins = '', string $library = ''): array
@@ -37,8 +41,7 @@ class Xpl extends HttpRequest
 
         $queryString = http_build_query($queryParams);
         $url = "/{$blockchain}/addresses/{$addressList}?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function searchAllBlockchains(string $query, string $from = 'all', string $in = 'all', string $mixins = '', string $library = ''): array
@@ -59,8 +62,7 @@ class Xpl extends HttpRequest
 
         $queryString = http_build_query($queryParams);
         $url = "/search?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getStats(string $from = 'all', string $mode = 'non-greedy', string $library = ''): array
@@ -76,8 +78,7 @@ class Xpl extends HttpRequest
 
         $queryString = http_build_query($queryParams);
         $url = "/?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getPaginatedBlocks(string $blockchain, string $data, string $from = 'all', int $limit = 10, int $page = 0, string $mixins = '', string $library = ''): array
@@ -99,8 +100,7 @@ class Xpl extends HttpRequest
 
         $queryString = http_build_query($queryParams);
         $url = "/{$blockchain}/blocks?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getBlockData(string $blockchain, int $block, string $data, string $from = 'all', int $limit = 10, int $page = 0, string $mixins = '', string $library = ''): array
@@ -122,8 +122,7 @@ class Xpl extends HttpRequest
 
         $queryString = http_build_query($queryParams);
         $url = "/{$blockchain}/block/{$block}?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getTransactionData(string $blockchain, string $transaction, string $data, string $from = 'all', int $limit = 10, int $page = 0, string $mixins = '', string $library = ''): array
@@ -145,8 +144,7 @@ class Xpl extends HttpRequest
 
         $queryString = http_build_query($queryParams);
         $url = "/{$blockchain}/transaction/{$transaction}?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getAddressData(string $blockchain, string $address, string $data, string $from = 'all', int $limit = 10, int $page = 0, string $segment = '', string $mixins = '', string $library = ''): array
@@ -172,7 +170,6 @@ class Xpl extends HttpRequest
 
         $queryString = http_build_query($queryParams);
         $url = "/{$blockchain}/address/{$address}?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 }

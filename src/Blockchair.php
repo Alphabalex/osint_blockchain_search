@@ -7,36 +7,39 @@ use Eaglewatch\Web3Search\Abstracts\HttpRequest;
 
 class Blockchair extends HttpRequest
 {
+    private $defaultConfig = array("api_url" => "https://api.blockchair.com");
+    private $options = array();
+    private $apiKey;
 
-    public function __construct()
+    public function __construct(string $api_key, array $options = [])
     {
-        $this->setApiUrl(config('blockchair.api_url'));
-        $this->setApiKey(config('blockchair.api_key'));
-        //$this->additionalHeader = ['X-API-Key' => $this->apiKey];
+        $this->options = array_merge($this->defaultConfig, $options);
+        $this->setApiUrl($this->options['api_url']);
+        $this->apiKey = $api_key;
     }
 
     public function setBlockchain(string $blockchain)
     {
         $blockchainUrls = [
-            'bitcoin' => "{$this->baseUrl}/bitcoin",
-            'bitcoin-cash' => "{$this->baseUrl}/bitcoin-cash",
-            'bitcoin-testnet' => "{$this->baseUrl}/bitcoin/testnet",
-            'omni' => "{$this->baseUrl}/bitcoin/omni",
-            'ethereum' => "{$this->baseUrl}/ethereum",
-            'erc-20' => "{$this->baseUrl}/ethereum/erc-20",
-            'ethereum-testnet' => "{$this->baseUrl}/ethereum/testnet",
-            'litecoin' => "{$this->baseUrl}/litecoin",
-            'bitcoin-sv' => "{$this->baseUrl}/bitcoin-sv",
-            'dogecoin' => "{$this->baseUrl}/dogecoin",
-            'dash' => "{$this->baseUrl}/dash",
-            'ripple' => "{$this->baseUrl}/ripple",
-            'groestlcoin' => "{$this->baseUrl}/groestlcoin",
-            'stellar' => "{$this->baseUrl}/stellar",
-            'monero' => "{$this->baseUrl}/monero",
-            'cardano' => "{$this->baseUrl}/cardano",
-            'zcash' => "{$this->baseUrl}/zcash",
-            'mixin' => "{$this->baseUrl}/mixin",
-            'ecash' => "{$this->baseUrl}/ecash",
+            'bitcoin' => "{$this->options['api_url']}/bitcoin",
+            'bitcoin-cash' => "{$this->options['api_url']}/bitcoin-cash",
+            'bitcoin-testnet' => "{$this->options['api_url']}/bitcoin/testnet",
+            'omni' => "{$this->options['api_url']}/bitcoin/omni",
+            'ethereum' => "{$this->options['api_url']}/ethereum",
+            'erc-20' => "{$this->options['api_url']}/ethereum/erc-20",
+            'ethereum-testnet' => "{$this->options['api_url']}/ethereum/testnet",
+            'litecoin' => "{$this->options['api_url']}/litecoin",
+            'bitcoin-sv' => "{$this->options['api_url']}/bitcoin-sv",
+            'dogecoin' => "{$this->options['api_url']}/dogecoin",
+            'dash' => "{$this->options['api_url']}/dash",
+            'ripple' => "{$this->options['api_url']}/ripple",
+            'groestlcoin' => "{$this->options['api_url']}/groestlcoin",
+            'stellar' => "{$this->options['api_url']}/stellar",
+            'monero' => "{$this->options['api_url']}/monero",
+            'cardano' => "{$this->options['api_url']}/cardano",
+            'zcash' => "{$this->options['api_url']}/zcash",
+            'mixin' => "{$this->options['api_url']}/mixin",
+            'ecash' => "{$this->options['api_url']}/ecash",
         ];
 
         if (!array_key_exists($blockchain, $blockchainUrls)) {
@@ -51,8 +54,7 @@ class Blockchair extends HttpRequest
     public function getStats(): array
     {
         $url = "/stats";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getRawBlockData(string $identifier): array
@@ -62,8 +64,7 @@ class Blockchair extends HttpRequest
         }
 
         $url = "/raw/block/{$identifier}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getRawTransactionData(string $hash): array
@@ -73,8 +74,7 @@ class Blockchair extends HttpRequest
         }
 
         $url = "/raw/transaction/{$hash}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getDashboardBlockData(mixed $identifier): array
@@ -89,9 +89,7 @@ class Blockchair extends HttpRequest
         } else {
             $url = "/dashboards/block/{$identifier}";
         }
-
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getDashboardTransactionData(mixed $identifier): array
@@ -106,9 +104,7 @@ class Blockchair extends HttpRequest
         } else {
             $url = "/dashboards/transaction/{$identifier}";
         }
-
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getAddressData(mixed $address): array
@@ -120,7 +116,6 @@ class Blockchair extends HttpRequest
             $url = "/dashboards/address/{$address}";
         }
 
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 }

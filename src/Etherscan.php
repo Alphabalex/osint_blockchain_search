@@ -7,12 +7,15 @@ use Eaglewatch\Web3Search\Abstracts\HttpRequest;
 
 class Etherscan extends HttpRequest
 {
+    private $defaultConfig = array("api_url" => "https://api.etherscan.io/v2/api");
+    private $options = array();
+    private $apiKey;
 
-    public function __construct()
+    public function __construct(string $api_key, array $options = [])
     {
-        $this->setApiUrl(config('etherscan.api_url'));
-        $this->setApiKey(config('etherscan.api_key'));
-        //$this->additionalHeader = ['X-API-Key' => $this->apiKey];
+        $this->options = array_merge($this->defaultConfig, $options);
+        $this->setApiUrl($this->options['api_url']);
+        $this->apiKey = $api_key;
     }
 
     public function getBalance(mixed $address, int $chain = Chain::BASE_MAINNET): array
@@ -23,8 +26,7 @@ class Etherscan extends HttpRequest
         } else {
             $url = "?chainid={$chain}&module=account&action=balance&address={$address}&tag=latest&apikey={$this->apiKey}";
         }
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getNormalTransactions(string $address, int $chain = Chain::BASE_MAINNET, int $startblock = 0, int $endblock = 99999999, int $page = 1, int $offset = 100, string $sort = "asc"): array
@@ -42,8 +44,7 @@ class Etherscan extends HttpRequest
             'apikey' => $this->apiKey
         ]);
         $url = "?{$data}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getInternalTransactions(string $address, int $chain = Chain::BASE_MAINNET, int $startblock = 0, int $endblock = 99999999, int $page = 1, int $offset = 100, string $sort = "asc"): array
@@ -61,8 +62,7 @@ class Etherscan extends HttpRequest
             'apikey' => $this->apiKey
         ]);
         $url = "?{$data}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getInternalTransactionsByHash(string $hash, int $chain = Chain::BASE_MAINNET, int $page = 1, int $offset = 100, string $sort = "asc"): array
@@ -78,8 +78,7 @@ class Etherscan extends HttpRequest
             'apikey' => $this->apiKey
         ]);
         $url = "?{$data}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getInternalTransactionsByBlock(int $chain = Chain::BASE_MAINNET, int $startblock = 0, int $endblock = 99999999, int $page = 1, int $offset = 100, string $sort = "asc"): array
@@ -96,8 +95,7 @@ class Etherscan extends HttpRequest
             'apikey' => $this->apiKey
         ]);
         $url = "?{$data}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getERC20TokenTransfers(string $address, string $contractaddress = '', int $chain = Chain::BASE_MAINNET, int $startblock = 0, int $endblock = 99999999, int $page = 1, int $offset = 100, string $sort = "asc"): array
@@ -114,15 +112,14 @@ class Etherscan extends HttpRequest
             'sort' => $sort,
             'apikey' => $this->apiKey
         ];
-    
+
         if (!empty($contractaddress)) {
             $data['contractaddress'] = $contractaddress;
         }
-    
+
         $queryString = http_build_query($data);
         $url = "?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getERC721TokenTransfers(string $address, string $contractaddress = '', int $chain = Chain::BASE_MAINNET, int $startblock = 0, int $endblock = 99999999, int $page = 1, int $offset = 100, string $sort = "asc"): array
@@ -139,15 +136,14 @@ class Etherscan extends HttpRequest
             'sort' => $sort,
             'apikey' => $this->apiKey
         ];
-    
+
         if (!empty($contractaddress)) {
             $data['contractaddress'] = $contractaddress;
         }
-    
+
         $queryString = http_build_query($data);
         $url = "?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getERC1155TokenTransfers(string $address, string $contractaddress = '', int $chain = Chain::BASE_MAINNET, int $startblock = 0, int $endblock = 99999999, int $page = 1, int $offset = 100, string $sort = "asc"): array
@@ -164,15 +160,14 @@ class Etherscan extends HttpRequest
             'sort' => $sort,
             'apikey' => $this->apiKey
         ];
-    
+
         if (!empty($contractaddress)) {
             $data['contractaddress'] = $contractaddress;
         }
-    
+
         $queryString = http_build_query($data);
         $url = "?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getBlocks(string $address, int $chain = Chain::BASE_MAINNET, string $blocktype = "blocks", int $page = 1, int $offset = 100): array
@@ -189,8 +184,7 @@ class Etherscan extends HttpRequest
         ];
         $queryString = http_build_query($data);
         $url = "?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getWithdrawals(string $address, int $chain = Chain::BASE_MAINNET, int $startblock = 0, int $endblock = 99999999, int $page = 1, int $offset = 100, string $sort = "asc"): array
@@ -209,8 +203,7 @@ class Etherscan extends HttpRequest
         ];
         $queryString = http_build_query($data);
         $url = "?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 
     public function getHistoricalBalance(string $address, int $chain = Chain::BASE_MAINNET, int $blockno = 8000000): array
@@ -225,7 +218,6 @@ class Etherscan extends HttpRequest
         ];
         $queryString = http_build_query($data);
         $url = "?{$queryString}";
-        $this->setRequestOptions();
-        return $this->setHttpResponse($url, 'GET', [])->getResponse();
+        return $this->sendHttpRequest($url, 'GET', []);
     }
 }
