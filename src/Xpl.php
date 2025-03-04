@@ -10,13 +10,12 @@ class Xpl extends HttpRequest
 
     private $defaultConfig = array("api_url" => "https://sandbox-api.3xpl.com");
     private $options = array();
-    private $apiKey;
 
     public function __construct(string $api_key, array $options = [])
     {
         $this->options = array_merge($this->defaultConfig, $options);
         $this->setApiUrl($this->options['api_url']);
-        $this->apiKey = $api_key;
+        $this->setHeaders(['Authorization' => "Bearer {$api_key}"]);
     }
 
     public function getLastSeenData(string $blockchain, array $addresses, array $data, string $from = 'all', string $mixins = '', string $library = ''): array
