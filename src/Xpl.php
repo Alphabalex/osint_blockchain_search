@@ -80,10 +80,10 @@ class Xpl extends HttpRequest
         return $this->sendHttpRequest($url, 'GET', []);
     }
 
-    public function getPaginatedBlocks(string $blockchain, string $data, string $from = 'all', int $limit = 10, int $page = 0, string $mixins = '', string $library = ''): array
+    public function getPaginatedBlocks(string $blockchain, array $data, string $from = 'all', int $limit = 10, int $page = 0, string $mixins = '', string $library = ''): array
     {
         $queryParams = [
-            'data' => $data,
+            'data' => implode(",", $data),
             'from' => $from,
             'limit' => $limit,
             'page' => $page,
@@ -102,10 +102,10 @@ class Xpl extends HttpRequest
         return $this->sendHttpRequest($url, 'GET', []);
     }
 
-    public function getBlockData(string $blockchain, int $block, string $data, string $from = 'all', int $limit = 10, int $page = 0, string $mixins = '', string $library = ''): array
+    public function getBlockData(string $blockchain, int $block, array $data, string $from = 'all', int $limit = 10, int $page = 0, string $mixins = '', string $library = ''): array
     {
         $queryParams = [
-            'data' => $data,
+            'data' => implode(",", $data),
             'from' => $from,
             'limit' => $limit,
             'page' => $page,
@@ -124,10 +124,10 @@ class Xpl extends HttpRequest
         return $this->sendHttpRequest($url, 'GET', []);
     }
 
-    public function getTransactionData(string $blockchain, string $transaction, string $data, string $from = 'all', int $limit = 10, int $page = 0, string $mixins = '', string $library = ''): array
+    public function getTransactionData(string $blockchain, string $transaction, array $data, string $from = 'all', int $limit = 10, int $page = 0, string $mixins = '', string $library = ''): array
     {
         $queryParams = [
-            'data' => $data,
+            'data' => implode(",", $data),
             'from' => $from,
             'limit' => $limit,
             'page' => $page,
@@ -146,10 +146,10 @@ class Xpl extends HttpRequest
         return $this->sendHttpRequest($url, 'GET', []);
     }
 
-    public function getAddressData(string $blockchain, string $address, string $data, string $from = 'all', int $limit = 10, int $page = 0, string $segment = '', string $mixins = '', string $library = ''): array
+    public function getAddressData(string $blockchain, string $address, array $data, string $from = 'all', int $limit = 10, int $page = 0, string $segment = '', string $mixins = '', string $library = ''): array
     {
         $queryParams = [
-            'data' => $data,
+            'data' => implode(",", $data),
             'from' => $from,
             'limit' => $limit,
             'page' => $page,
